@@ -3,52 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fake News Detector</title>
+    <title>Fake News Detection</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
         }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
         textarea {
-            width: 80%;
-            height: 100px;
-            margin: 10px 0;
-        }
-        button {
+            width: 100%;
             padding: 10px;
-            background-color: blue;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: none;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: #007bff;
             color: white;
             border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
-        #result {
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
             margin-top: 20px;
-            font-size: 20px;
-            font-weight: bold;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .result h3 {
+            color: #333;
+        }
+
+        .result p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .loading {
+            display: none;
+            color: #007bff;
+            font-size: 14px;
+            margin-top: 10px;
         }
     </style>
-</head>
-<body>
-    <h2>Fake News Detector</h2>
-    <textarea id="newsText" placeholder="Enter news text here..."></textarea>
-    <br>
-    <button onclick="checkNews()">Check News</button>
-    <p id="result"></p>
-
     <script>
-        function checkNews() {
-            let text = document.getElementById("newsText").value;
-            fetch("/predict", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text: text })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("result").innerText = "Prediction: " + data.result;
-            });
+        function showLoading() {
+            const loadingElement = document.getElementById('loading');
+            loadingElement.style.display = 'block';
         }
     </script>
+</head>
+<body>
+    <h1>Fake News Detection</h1>
+    <form method="POST" action="/predict" onsubmit="showLoading()">
+        <textarea name="news_text" rows="5" placeholder="Enter the news article here..."></textarea><br><br>
+        <button type="submit">Check News</button>
+        <p id="loading" class="loading">Processing your request...</p>
+    </form>
+
+    {% if result %}
+        <div class="result">
+            <h3>Prediction: {{ result.prediction }}</h3>
+            <p>Fake News Probability: {{ result.fake_prob }}</p>
+            <p>Real News Probability: {{ result.real_prob }}</p>
+        </div>
+    {% endif %}
 </body>
 </html>
